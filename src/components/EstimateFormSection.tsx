@@ -12,6 +12,12 @@ import EstimateStepDetails from "./estimate/EstimateStepDetails";
 import EstimateStepHealth from "./estimate/EstimateStepHealth";
 import EstimateStepContact from "./estimate/EstimateStepContact";
 
+declare global {
+  interface Window {
+    fbq?: (...args: unknown[]) => void;
+  }
+}
+
 export interface EstimateFormData {
   service: string;
   propertySize: string;
@@ -114,6 +120,14 @@ const EstimateFormSection = () => {
         },
         body: JSON.stringify(emailBody),
       });
+
+      // Meta Pixel — Lead event
+      if (typeof window !== "undefined" && window.fbq) {
+        window.fbq("track", "Lead", {
+          content_name: form.service,
+          content_category: "cleaning_service",
+        });
+      }
 
       setSubmitted(true);
       toast({
